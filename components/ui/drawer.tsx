@@ -13,7 +13,11 @@ const DrawerOverlay = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
-  <DrawerPrimitive.Overlay ref={ref} className={cn("fixed inset-0 z-40 bg-black/50", className)} {...props} />
+  <DrawerPrimitive.Overlay
+    ref={ref}
+    className={cn("fixed inset-0 z-40 bg-black/50 backdrop-blur-sm", className)}
+    {...props}
+  />
 ))
 DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
 
@@ -26,9 +30,9 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed right-0 top-0 z-50 h-screen w-[640px] max-h-[92vh] overflow-y-auto",
-        "border-l border-border bg-surface shadow-lg",
-        "animate-in slide-in-from-right-96 duration-500",
+        "fixed right-0 top-0 z-50 h-screen w-full max-w-[720px] overflow-y-auto",
+        "border-l border-border bg-background shadow-2xl rounded-l-2xl",
+        "animate-in slide-in-from-right-96 duration-300",
         className,
       )}
       {...props}
@@ -40,7 +44,14 @@ const DrawerContent = React.forwardRef<
 DrawerContent.displayName = "DrawerContent"
 
 const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("border-b border-border px-6 py-5", className)} {...props} />
+  <div
+    className={cn(
+      "border-b border-border px-6 py-5 sticky top-0 z-10",
+      "bg-background/95 supports-[backdrop-filter]:backdrop-blur",
+      className,
+    )}
+    {...props}
+  />
 )
 DrawerHeader.displayName = "DrawerHeader"
 
@@ -50,7 +61,14 @@ const DrawerBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement
 DrawerBody.displayName = "DrawerBody"
 
 const DrawerFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("border-t border-border px-6 py-5 flex items-center gap-3 justify-end", className)} {...props} />
+  <div
+    className={cn(
+      "border-t border-border px-6 py-5 flex items-center gap-3 justify-end sticky bottom-0 z-10",
+      "bg-background/95 supports-[backdrop-filter]:backdrop-blur",
+      className,
+    )}
+    {...props}
+  />
 )
 DrawerFooter.displayName = "DrawerFooter"
 

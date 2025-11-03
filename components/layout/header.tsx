@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 
 export function Header() {
   return (
-    <header className="fixed right-0 top-0 left-64 z-30 border-b border-border bg-background">
+    <header className="fixed right-0 top-0 z-30 border-b border-border bg-background" style={{ left: "var(--app-sidebar-width, 256px)" }}>
       <div className="flex h-16 items-center justify-between px-6">
         <div className="flex-1">
           <div className="relative max-w-xs">

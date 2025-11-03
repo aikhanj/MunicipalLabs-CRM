@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import type { ThreadRow } from "@/lib/types"
-import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerBody, DrawerFooter } from "@/components/ui/drawer"
+import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerBody, DrawerFooter, DrawerTitle } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -89,7 +89,7 @@ export function ReplyDrawer({ thread, onClose }: ReplyDrawerProps) {
         <DrawerHeader>
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <h2 className="text-xl font-semibold text-ink-900">{thread.subject}</h2>
+              <DrawerTitle className="text-xl font-semibold text-ink-900">{thread.subject}</DrawerTitle>
               <p className="text-sm text-ink-500 mt-1">From: {thread.sender}</p>
               <p className="text-xs text-ink-400">{formatDate(thread.receivedAt)}</p>
             </div>

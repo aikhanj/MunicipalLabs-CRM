@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -8,7 +8,28 @@ import { ChevronLeft, ChevronRight, LayoutGrid, Mail, Settings, BookOpen } from 
 
 export function Sidebar() {
   const pathname = usePathname()
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false
+    try {
+      return window.localStorage.getItem("sidebar_collapsed") === "true"
+    } catch {
+      return false
+    }
+  })
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("sidebar_collapsed", String(isCollapsed))
+    } catch {
+      // ignore persistence errors
+    }
+    try {
+      const width = isCollapsed ? "80px" : "256px"
+      document.documentElement.style.setProperty("--app-sidebar-width", width)
+    } catch {
+      // ignore
+    }
+  }, [isCollapsed])
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/")
 

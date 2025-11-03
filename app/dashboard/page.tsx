@@ -33,7 +33,7 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <div className="ml-64 flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col" style={{ marginLeft: "var(--app-sidebar-width, 256px)" }}>
         <Header />
         <main className="mt-16 flex-1 overflow-auto">
           <div className="px-6 py-6 space-y-6">
