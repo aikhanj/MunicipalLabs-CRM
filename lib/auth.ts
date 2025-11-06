@@ -11,7 +11,7 @@ const scopes = [
 ].join(" ")
 // basically the scopes that we will be requesting from the user. Guess which one is sensitive ;).
 
-async function refreshGoogleAccessToken(token: any) {
+export async function refreshGoogleAccessToken(token: any) {
   try {
     const res = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
