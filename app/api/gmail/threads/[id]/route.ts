@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server"
 import { getToken } from "next-auth/jwt"
 import { refreshGoogleAccessToken } from "@/lib/auth"
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
   if (!token) return new Response("Unauthorized", { status: 401 })
   // uses /api/gmail/threads/{id} to get the thread by id.
@@ -18,7 +18,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
   if (!accessToken) return new Response("Unauthorized", { status: 401 })
   // constructs the url to get the thread by id.
-  const url = new URL(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${encodeURIComponent(params.id)}`)
+  const { id } = await params
+  const url = new URL(`https://gmail.googleapis.com/gmail/v1/users/me/threads/${encodeURIComponent(id)}`)
   url.searchParams.set("format", "full")
   // fetches the thread by id.
   const res = await fetch(url.toString(), {

@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server"
 import { getToken } from "next-auth/jwt"
 import { refreshGoogleAccessToken } from "@/lib/auth"
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
   if (!token) return new Response("Unauthorized", { status: 401 })
   // uses /api/gmail/messages/{id} to get the message by id. same shit as threads but different story 🤣
@@ -23,7 +23,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   // constructs the path to get the message by id.
   const pathTail = urlObj.pathname.split("/api/gmail/messages/")[1] ?? ""
   const pathId = pathTail.split("/")[0] ?? ""
-  const rawId = (params?.id ?? pathId) ?? ""
+  const awaitedParams = await params
+  const rawId = ((awaitedParams?.id) ?? pathId) ?? ""
   const trimmedId = rawId.trim()
   const sanitizedId = trimmedId.replace(/[^A-Za-z0-9_-]/g, "")
   // checks if the sanitized id is valid.
