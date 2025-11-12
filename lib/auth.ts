@@ -5,6 +5,22 @@ import { seal } from "@/lib/tokenVault"
 import { query } from "@/lib/db"
 // Writing comments for people who are not familiar with my code lmao.
 
+/**
+ * Environment Variables Required:
+ * - NEXTAUTH_SECRET: Secret for JWT encryption (generate new for production!)
+ * - NEXTAUTH_URL: The canonical URL of your site
+ *   - Production: https://legaside.municipallabs.ai
+ *   - Preview: https://devlegaside.municipallabs.ai
+ *   - Local: http://localhost:3000
+ * - GOOGLE_CLIENT_ID: Google OAuth Client ID
+ * - GOOGLE_CLIENT_SECRET: Google OAuth Client Secret
+ * 
+ * Google OAuth Redirect URIs to add in Google Cloud Console:
+ * - https://legaside.municipallabs.ai/api/auth/callback/google
+ * - https://devlegaside.municipallabs.ai/api/auth/callback/google
+ * - http://localhost:3000/api/auth/callback/google (for local dev)
+ */
+
 
 const scopes = [
   "openid",

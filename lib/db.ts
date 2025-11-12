@@ -4,11 +4,13 @@ import { Pool, PoolClient, QueryResult } from "pg";
 // then it has a safety wrapper withTenant that handles transactions and sets the tenant ID in order to prevent fucking boilerplate lmao.
 
 // i'm creating a pool because it's wayyyy faster lol. i dont want nextjs to create a new connection for every request.
+// For Cloudflare Pages (serverless), we use smaller pool size and shorter timeouts
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 10, // basically the maximum number of connections that can be open at the same time.
-  idleTimeoutMillis: 30000, // basically if the connection is idle for 30 seconds, it will be terminated.
-  connectionTimeoutMillis: 2000, // basically if the conenction takes longer than 2 seconds, it will be terminated.
+  max: 5, // smaller pool for serverless (each deployment instance creates its own pool)
+  idleTimeoutMillis: 10000, // release idle connections quickly in serverless (10 seconds)
+  connectionTimeoutMillis: 5000, // fail fast if connection issues (5 seconds)
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : undefined, // enforce SSL in production
 });
 
 // i'm doing this because i want to make sure that the pool is closed when the server is shutting down. module is cached though, so it doesn't matter much in production.

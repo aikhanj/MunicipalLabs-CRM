@@ -103,13 +103,48 @@ All routes require a valid session; tokens are fetched via NextAuth and refreshe
 ### Scripts
 
 ```bash
-pnpm dev       # start dev server
-pnpm build     # production build
-pnpm start     # start production server (after build)
-pnpm lint      # run linter
+# Development
+pnpm dev              # start dev server
+pnpm build            # production build
+pnpm start            # start production server (after build)
+pnpm lint             # run linter
+
+# Cloudflare Pages Deployment
+npm run pages:build   # build for Cloudflare Pages
+npm run pages:dev     # test Cloudflare runtime locally
+npm run pages:deploy  # deploy to Cloudflare Pages
+
+# Utilities
+npm run validate:db   # validate DATABASE_URL format
 ```
 
 (npm equivalents: `npm run dev`, etc.)
+
+---
+
+### Deployment to Cloudflare Pages
+
+This project is configured for deployment to Cloudflare Pages with custom domains:
+- Production: `legaside.municipallabs.ai`
+- Preview: `devlegaside.municipallabs.ai`
+
+**Quick Deploy:**
+
+1. **Install dependencies:** `npm install`
+2. **Build:** `npm run pages:build`
+3. **Deploy:** Follow [Cloudflare Deployment Guide](./docs/cloudflare-deployment.md)
+
+**Documentation:**
+- 📚 [Complete Deployment Guide](./docs/cloudflare-deployment.md) - Step-by-step instructions
+- 🔐 [Google OAuth Setup](./docs/google-oauth-setup.md) - Configure OAuth for production
+- 🗄️ [Supabase Configuration](./docs/supabase-setup.md) - Database setup for serverless
+- ⚙️ [Environment Variables](./docs/environment-variables.md) - All configuration options
+
+**Key Requirements:**
+- Use Supabase connection pooler (`?pgbouncer=true`)
+- Generate new secrets for production (`NEXTAUTH_SECRET`, `TOKEN_VAULT_KEY`)
+- Add redirect URIs to Google OAuth app
+- Configure environment variables in Cloudflare Pages dashboard
 
 ---
 
