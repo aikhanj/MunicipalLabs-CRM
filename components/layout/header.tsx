@@ -1,11 +1,10 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { Search, PanelLeft } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import { PanelLeft } from "lucide-react"
 import { signOut } from "next-auth/react"
 import {
   DropdownMenu,
@@ -16,36 +15,9 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle"
 
 export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
-  const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
-
-  const initialQuery = searchParams.get("q") ?? ""
-  const [query, setQuery] = useState(initialQuery)
   const [profileName, setProfileName] = useState<string | null>(null)
   const [authChecked, setAuthChecked] = useState(false)
-
-  // Keep input in sync when URL changes (e.g., navigating back/forward)
-  useEffect(() => {
-    const current = searchParams.get("q") ?? ""
-    setQuery((prev) => (prev !== current ? current : prev))
-  }, [searchParams])
-
-  // Debounced URL update when on the threads page
-  useEffect(() => {
-    if (pathname !== "/threads") return
-    const timeout = setTimeout(() => {
-      const params = new URLSearchParams(Array.from(searchParams.entries()))
-      if (query) {
-        params.set("q", query)
-      } else {
-        params.delete("q")
-      }
-      const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ""}`
-      router.replace(newUrl, { scroll: false })
-    }, 300)
-    return () => clearTimeout(timeout)
-  }, [query, pathname, searchParams, router])
 
   // Fetch auth session to determine profile name
   useEffect(() => {
@@ -73,26 +45,6 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
       cancelled = true
     }
   }, [])
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      const params = new URLSearchParams(Array.from(searchParams.entries()))
-      if (query) {
-        params.set("q", query)
-      } else {
-        params.delete("q")
-      }
-      const url = `/threads${params.toString() ? `?${params.toString()}` : ""}`
-      if (pathname === "/threads") {
-        router.replace(url, { scroll: false })
-      } else {
-        router.push(url)
-      }
-    }
-  }
-
-  // Hide search bar on chatbot page
-  const isOnChatbotPage = pathname === '/chatbot'
 
   return (
     <header className="fixed right-0 top-0 z-30 border-b border-border bg-background left-0 md:left-0">
@@ -125,20 +77,6 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
               className="h-8 w-8 hidden dark:block"
             />
           </Link>
-          {!isOnChatbotPage && (
-            <div className="relative max-w-sm">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search subject, sender, text"
-                className="pl-10 focus-visible:outline-ring"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                aria-label="Search"
-              />
-            </div>
-          )}
         </div>
         <div className="ml-4 shrink-0 flex items-center gap-2">
           <ThemeToggle />

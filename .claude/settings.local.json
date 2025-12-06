@@ -19,7 +19,8 @@
       "Bash(node scripts/check-important-filter.js:*)",
       "Bash(node scripts/check-unknown-senders.js:*)",
       "Bash(node scripts/backfill-sender-emails.js:*)",
-      "Bash(node scripts/check-outbound.js:*)"
+      "Bash(node scripts/check-outbound.js:*)",
+      "mcp__filesystem__list_directory"
     ],
     "deny": [],
     "ask": []

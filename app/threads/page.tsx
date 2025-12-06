@@ -18,6 +18,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { AISearchBar } from "@/components/search/ai-search-bar"
+import type { AISearchResult } from "@/app/api/search/ai/route"
 
 type ThreadListResponse = {
   items: ThreadRow[]
@@ -65,22 +67,44 @@ function useThreadsData(query: string, importantOnly: boolean) {
 
 function ThreadsPageInner() {
   const searchParams = useSearchParams()
-  const query = (searchParams.get("q") ?? "").toLowerCase()
+  const initialQuery = (searchParams.get("q") ?? "").toLowerCase()
+  const [query, setQuery] = useState(initialQuery)
   const [importantOnly, setImportantOnly] = useState(true) // Default to important only
+  const [aiFilters, setAiFilters] = useState<AISearchResult | null>(null)
   const { threads, loading, error } = useThreadsData(query, importantOnly)
   const [selectedThread, setSelectedThread] = useState<ThreadRow | null>(null)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
+  const handleAISearch = (result: AISearchResult) => {
+    setAiFilters(result)
+    setQuery(result.searchTerms || "")
+    if (result.important !== undefined) {
+      setImportantOnly(result.important)
+    }
+  }
+
   const filteredThreads = useMemo(() => {
     const list = threads ?? []
     return list.filter((thread) => {
+      // Apply search terms filter
       if (query) {
         const haystack = `${thread.subject} ${thread.sender} ${thread.summary}`.toLowerCase()
         if (!haystack.includes(query)) return false
       }
+
+      // Apply topic filter from AI
+      if (aiFilters?.topics && aiFilters.topics.length > 0) {
+        // Check if thread topic matches any of the AI-suggested topics
+        const threadTopic = thread.topic?.toLowerCase() || ""
+        const matchesTopic = aiFilters.topics.some(
+          (topic) => threadTopic.includes(topic.toLowerCase())
+        )
+        if (!matchesTopic) return false
+      }
+
       return true
     })
-  }, [threads, query])
+  }, [threads, query, aiFilters])
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -90,7 +114,7 @@ function ThreadsPageInner() {
           <Header onMenuClick={() => setMobileNavOpen(true)} />
         </Suspense>
         <main className="mt-16 flex-1 overflow-auto">
-          <div className="px-4 sm:px-6 pt-6">
+          <div className="px-4 sm:px-6 pt-6 space-y-6">
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
@@ -104,6 +128,7 @@ function ThreadsPageInner() {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
+
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-semibold text-foreground font-display">Threads</h1>
               <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-lg">
@@ -129,6 +154,11 @@ function ThreadsPageInner() {
                 </button>
               </div>
             </div>
+
+            <AISearchBar
+              onSearch={handleAISearch}
+              placeholder="Ask anything... e.g., 'Show me urgent healthcare emails'"
+            />
           </div>
           <div className="px-4 sm:px-6 py-6">
             {loading ? (
